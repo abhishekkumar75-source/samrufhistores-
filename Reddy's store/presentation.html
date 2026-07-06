@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samrudhi Store — Project Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ RESET & BASE ============ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #08060e;
+            --surface: rgba(18, 14, 33, 0.6);
+            --surface-hover: rgba(28, 22, 50, 0.7);
+            --border: rgba(255, 160, 50, 0.12);
+            --border-bright: rgba(255, 160, 50, 0.3);
+            --text: #fff8f0;
+            --text-dim: #b0a08a;
+            --text-muted: #6e5f4e;
+
+            --kumkum: #c0392b;
+            --saffron: #e67e22;
+            --gold: #f1c40f;
+            --mehndi: #27ae60;
+            --peacock: #16a085;
+            --sky: #3498db;
+
+            --gradient-fire: linear-gradient(135deg, #c0392b, #e67e22, #f1c40f);
+            --gradient-earth: linear-gradient(135deg, #27ae60, #16a085);
+            --gradient-sky: linear-gradient(135deg, #3498db, #9b59b6);
+
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-code: 'Fira Code', monospace;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ============ AMBIENT BACKGROUND ============ */
+        .ambient {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient .orb {
+            position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.25;
+        }
+        .ambient .orb-1 { width: 600px; height: 600px; background: #c0392b; top: -15%; left: -10%; animation: float1 18s ease-in-out infinite; }
+        .ambient .orb-2 { width: 700px; height: 700px; background: #e67e22; bottom: -20%; right: -15%; animation: float2 22s ease-in-out infinite; }
+        .ambient .orb-3 { width: 400px; height: 400px; background: #f1c40f; top: 40%; left: 50%; opacity: 0.08; animation: float3 16s ease-in-out infinite; }
+        .ambient .orb-4 { width: 350px; height: 350px; background: #16a085; top: 10%; right: 20%; opacity: 0.1; animation: float1 20s ease-in-out infinite reverse; }
+
+        @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-40px)} }
+        @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,30px)} }
+        @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,25px)} }
+
+        /* Rangoli pattern overlay */
+        .ambient::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='36' fill='none' stroke='rgba(230,126,34,0.04)' stroke-width='1'/%3E%3Ccircle cx='40' cy='40' r='24' fill='none' stroke='rgba(241,196,15,0.03)' stroke-width='1'/%3E%3Ccircle cx='40' cy='40' r='12' fill='none' stroke='rgba(192,57,43,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        /* ============ PRESENTATION WRAPPER ============ */
+        .presentation {
+            position: relative; z-index: 1;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ============ SLIDE SYSTEM ============ */
+        .slide {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 60px 80px;
+            opacity: 0;
+            transform: translateX(80px) scale(0.96);
+            transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .slide.active {
+            opacity: 1; transform: translateX(0) scale(1); pointer-events: all;
+        }
+        .slide.exit-left {
+            opacity: 0; transform: translateX(-80px) scale(0.96);
+        }
+
+        .slide-inner {
+            width: 100%;
+            max-width: 1200px;
+            animation: slideContentIn 0.9s var(--ease) both;
+        }
+        .slide.active .slide-inner { animation: slideContentIn 0.9s var(--ease) both; }
+        @keyframes slideContentIn { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ============ NAVIGATION ============ */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 40px;
+            background: rgba(8, 6, 14, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-progress {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .nav-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none; cursor: pointer;
+            transition: all 0.4s var(--ease);
+            position: relative;
+        }
+        .nav-dot.active {
+            width: 32px; border-radius: 5px;
+            background: var(--gradient-fire);
+            box-shadow: 0 0 12px rgba(230,126,34,0.4);
+        }
+        .nav-dot:hover:not(.active) { background: var(--text-dim); transform: scale(1.2); }
+        .nav-dot .tooltip {
+            position: absolute; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(18,14,33,0.95);
+            border: 1px solid var(--border);
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 11px; white-space: nowrap; color: var(--text);
+            opacity: 0; pointer-events: none;
+            transition: all 0.3s var(--ease);
+        }
+        .nav-dot:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .nav-info {
+            font-size: 13px; color: var(--text-dim); font-weight: 600; font-family: var(--font-code);
+        }
+
+        .nav-controls { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s var(--ease);
+        }
+        .nav-btn:hover { background: var(--surface-hover); border-color: var(--border-bright); transform: translateY(-2px); }
+        .nav-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+
+        /* ============ TYPOGRAPHY ============ */
+        .slide-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2.5px; color: var(--saffron);
+            margin-bottom: 16px;
+        }
+        .slide-tag::before {
+            content: ''; width: 24px; height: 2px;
+            background: var(--gradient-fire); border-radius: 2px;
+        }
+
+        h1.hero-title {
+            font-family: var(--font-head);
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 20px;
+        }
+        h1.hero-title .highlight {
+            background: var(--gradient-fire);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2.section-title {
+            font-family: var(--font-head);
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+        h2.section-title .highlight {
+            background: var(--gradient-fire);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 17px; color: var(--text-dim);
+            line-height: 1.7; max-width: 640px;
+        }
+
+        /* ============ CARDS / BOXES ============ */
+        .glass-card {
+            background: var(--surface);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.4s var(--ease);
+        }
+        .glass-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px rgba(230,126,34,0.06);
+        }
+
+        .card-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .card-icon::after {
+            content: ''; position: absolute; inset: 0; border-radius: 14px;
+            background: inherit; filter: blur(14px); opacity: 0.3; z-index: -1;
+        }
+
+        .card-title {
+            font-family: var(--font-head);
+            font-size: 16px; font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .card-desc {
+            font-size: 13px; color: var(--text-dim); line-height: 1.6;
+        }
+
+        /* ============ GRID LAYOUTS ============ */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start; }
+        .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: start; }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+            .slide { padding: 40px 24px; }
+        }
+
+        /* ============ CODE BLOCKS ============ */
+        .code-block {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: var(--font-code);
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-x: auto;
+            color: var(--text-dim);
+        }
+        .code-block .kw { color: #c0392b; }
+        .code-block .fn { color: #e67e22; }
+        .code-block .str { color: #27ae60; }
+        .code-block .cm { color: #555; font-style: italic; }
+        .code-block .num { color: #f1c40f; }
+        .code-block .dec { color: #9b59b6; }
+
+        /* ============ BADGE / CHIPS ============ */
+        .tech-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 50px;
+            font-size: 12px; font-weight: 600;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.3s var(--ease);
+        }
+        .tech-chip:hover { border-color: var(--border-bright); background: rgba(255,255,255,0.04); }
+        .tech-chip i { font-size: 14px; }
+
+        /* ============ ROADMAP / TIMELINE ============ */
+        .timeline {
+            position: relative;
+            padding-left: 36px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute; left: 14px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--kumkum), var(--saffron), var(--gold), var(--mehndi), var(--peacock));
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            padding: 16px 0 28px 24px;
+        }
+        .timeline-dot {
+            position: absolute; left: -28px; top: 18px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 3px solid var(--bg);
+        }
+        .timeline-item:nth-child(1) .timeline-dot { background: var(--kumkum); box-shadow: 0 0 10px rgba(192,57,43,0.5); }
+        .timeline-item:nth-child(2) .timeline-dot { background: var(--saffron); box-shadow: 0 0 10px rgba(230,126,34,0.5); }
+        .timeline-item:nth-child(3) .timeline-dot { background: var(--gold); box-shadow: 0 0 10px rgba(241,196,15,0.5); }
+        .timeline-item:nth-child(4) .timeline-dot { background: var(--mehndi); box-shadow: 0 0 10px rgba(39,174,96,0.5); }
+        .timeline-item:nth-child(5) .timeline-dot { background: var(--peacock); box-shadow: 0 0 10px rgba(22,160,133,0.5); }
+        .timeline-item:nth-child(6) .timeline-dot { background: var(--sky); box-shadow: 0 0 10px rgba(52,152,219,0.5); }
+
+        .timeline-title {
+            font-family: var(--font-head);
+            font-size: 15px; font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .timeline-desc {
+            font-size: 12.5px; color: var(--text-dim); line-height: 1.6;
+        }
+
+        /* ============ FLOW DIAGRAM ============ */
+        .flow-row {
+            display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap;
+        }
+        .flow-node {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 22px;
+            text-align: center;
+            min-width: 130px;
+            transition: all 0.3s var(--ease);
+        }
+        .flow-node:hover { border-color: var(--border-bright); transform: translateY(-3px); }
+        .flow-node-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+        .flow-node-label { font-family: var(--font-head); font-size: 12px; font-weight: 700; }
+        .flow-arrow {
+            font-size: 20px; color: var(--text-muted); padding: 0 4px;
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+        @keyframes arrowPulse { 0%,100%{opacity:0.3} 50%{opacity:1; color: var(--saffron);} }
+
+        /* ============ STATS BAR ============ */
+        .stat-bar {
+            display: flex; align-items: center; gap: 40px; justify-content: center;
+            padding: 30px 0; margin: 20px 0;
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            font-family: var(--font-head);
+            font-size: 36px; font-weight: 900;
+            background: var(--gradient-fire);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 4px; }
+
+        /* ============ FEATURE LIST ============ */
+        .feature-list { list-style: none; }
+        .feature-list li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0;
+            font-size: 14px; color: var(--text-dim); line-height: 1.6;
+        }
+        .feature-list li i {
+            color: var(--mehndi);
+            margin-top: 3px; font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ============ DIVIDER ============ */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border-bright), transparent);
+            margin: 24px 0;
+        }
+
+        /* ============ API ENDPOINT TABLE ============ */
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .api-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .api-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text-dim);
+        }
+        .api-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .method-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .method-get { background: rgba(39,174,96,0.15); color: var(--mehndi); }
+        .method-post { background: rgba(230,126,34,0.15); color: var(--saffron); }
+
+        .endpoint-path {
+            font-family: var(--font-code);
+            color: var(--gold);
+        }
+
+        /* ============ KEYBOARD HINT ============ */
+        .kb-hint {
+            position: fixed; bottom: 80px; right: 40px; z-index: 99;
+            font-size: 11px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 6px;
+            opacity: 0.5;
+        }
+        .kb-key {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 24px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* ============ SCROLL AREA FOR TALL SLIDES ============ */
+        .scrollable-content {
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        .scrollable-content::-webkit-scrollbar { width: 4px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+
+        /* ============ SPECIAL: TITLE SLIDE CENTER ============ */
+        .title-center {
+            text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* ============ ANIMATIONS ============ */
+        .fade-up {
+            opacity: 0; transform: translateY(20px);
+            animation: fadeUp 0.8s var(--ease) forwards;
+        }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+
+        /* Pulse glow for hero icon */
+        .hero-icon-wrap {
+            width: 80px; height: 80px;
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 34px;
+            background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(230,126,34,0.2));
+            border: 1px solid rgba(230,126,34,0.3);
+            margin-bottom: 24px;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%,100% { box-shadow: 0 0 20px rgba(230,126,34,0.1); }
+            50% { box-shadow: 0 0 40px rgba(230,126,34,0.25); }
+        }
+
+        /* ============ TECH STACK COLORS ============ */
+        .color-python { color: #3498db; }
+        .color-fastapi { color: #16a085; }
+        .color-html { color: #e67e22; }
+        .color-css { color: #3498db; }
+        .color-js { color: #f1c40f; }
+        .color-json { color: #9b59b6; }
+        .color-pydantic { color: #e74c3c; }
+        .color-uvicorn { color: #27ae60; }
+
+        .bg-python { background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(52,152,219,0.05)); }
+        .bg-fastapi { background: linear-gradient(135deg, rgba(22,160,133,0.2), rgba(22,160,133,0.05)); }
+        .bg-html { background: linear-gradient(135deg, rgba(230,126,34,0.2), rgba(230,126,34,0.05)); }
+        .bg-css { background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(52,152,219,0.05)); }
+        .bg-js { background: linear-gradient(135deg, rgba(241,196,15,0.2), rgba(241,196,15,0.05)); }
+        .bg-json { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(155,89,182,0.05)); }
+
+        /* ============ FOOTER-LIKE SUBTLE TEXT ============ */
+        .slide-footer-note {
+            position: absolute; bottom: 80px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px; color: var(--text-muted);
+            font-family: var(--font-code);
+        }
+
+        /* ============ ARCHITECTURE BOXES ============ */
+        .arch-layer {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 22px;
+            background: var(--surface);
+            position: relative;
+        }
+        .arch-layer-label {
+            position: absolute; top: -10px; left: 18px;
+            background: var(--bg);
+            padding: 0 10px;
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .arch-items {
+            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px;
+        }
+        .arch-item {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Vertical connector */
+        .arch-connector {
+            display: flex; justify-content: center; padding: 6px 0;
+            color: var(--text-muted); font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div class="ambient">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+</div>
+
+<!-- Keyboard Hint -->
+<div class="kb-hint">
+    <span class="kb-key">←</span>
+    <span class="kb-key">→</span>
+    Navigate
+</div>
+
+<!-- ==================== SLIDES ==================== -->
+<div class="presentation" id="presentation">
+
+    <!-- ======= SLIDE 0: Title ======= -->
+    <div class="slide active" data-slide="0">
+        <div class="slide-inner title-center">
+            <div class="hero-icon-wrap fade-up">
+                <i class="fa-solid fa-cube"></i>
+            </div>
+            <div class="slide-tag fade-up stagger-1">College Project Presentation</div>
+            <h1 class="hero-title fade-up stagger-2">
+                Samrudhi <span class="highlight">Store</span>
+            </h1>
+            <p class="subtitle fade-up stagger-3" style="text-align:center; margin-bottom: 28px;">
+                A premium, full-stack tech e-commerce platform built from scratch using <strong>Python + FastAPI</strong> for the backend and <strong>HTML, CSS & JavaScript</strong> for a stunning glassmorphic frontend.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;" class="fade-up stagger-4">
+                <span class="tech-chip"><i class="fa-brands fa-python color-python"></i> Python 3.10+</span>
+                <span class="tech-chip"><i class="fa-solid fa-bolt color-fastapi"></i> FastAPI</span>
+                <span class="tech-chip"><i class="fa-brands fa-html5 color-html"></i> HTML5</span>
+                <span class="tech-chip"><i class="fa-brands fa-css3-alt color-css"></i> CSS3</span>
+                <span class="tech-chip"><i class="fa-brands fa-js color-js"></i> JavaScript</span>
+                <span class="tech-chip"><i class="fa-solid fa-database color-json"></i> JSON DB</span>
+            </div>
+            <div class="stat-bar fade-up stagger-5">
+                <div class="stat-item"><div class="stat-value">1,284</div><div class="stat-label">Lines of Code</div></div>
+                <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">Source Files</div></div>
+                <div class="stat-item"><div class="stat-value">6</div><div class="stat-label">API Endpoints</div></div>
+                <div class="stat-item"><div class="stat-value">10</div><div class="stat-label">Products</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 1: Problem & Solution ======= -->
+    <div class="slide" data-slide="1">
+        <div class="slide-inner">
+            <div class="grid-2" style="align-items: center;">
+                <div>
+                    <div class="slide-tag">The Idea</div>
+                    <h2 class="section-title">Why We Built <span class="highlight">This</span></h2>
+                    <p class="subtitle" style="margin-bottom: 24px;">
+                        We wanted to prove that a college assignment doesn't have to look boring. So we built a <em>real-feeling</em> online tech store — the kind you'd actually want to shop on — using only the tools our syllabus teaches.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check-circle"></i> Hands-on learning with <strong>Python backend development</strong> using FastAPI</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Understanding the full <strong>request-response lifecycle</strong> of a web app</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Building a <strong>production-quality UI</strong> with modern design principles</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Implementing a real <strong>shopping cart + checkout + invoice</strong> workflow</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Simulating a <strong>database</strong> with persistent JSON file storage</li>
+                    </ul>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div class="glass-card">
+                        <div class="card-icon bg-python"><i class="fa-solid fa-server color-python"></i></div>
+                        <div class="card-title">Backend Powered</div>
+                        <div class="card-desc">FastAPI handles all business logic — products, cart calculations, coupon validation, order storage, and invoice generation.</div>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-icon bg-html"><i class="fa-solid fa-palette color-html"></i></div>
+                        <div class="card-title">Glassmorphic UI</div>
+                        <div class="card-desc">A rich, dark-themed interface inspired by Indian color aesthetics — saffron, gold, kumkum & peacock teal with smooth animations.</div>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-icon bg-json"><i class="fa-solid fa-shield-halved color-json"></i></div>
+                        <div class="card-title">End-to-End Flow</div>
+                        <div class="card-desc">From browsing products → adding to cart → applying coupons → checkout → payment simulation → downloading invoices.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 2: Tech Stack Deep Dive ======= -->
+    <div class="slide" data-slide="2">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">Technology Stack</div>
+            <h2 class="section-title">Libraries & Tools <span class="highlight">We Used</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">Every technology was chosen with purpose. Here's what powers this project under the hood.</p>
+
+            <div class="grid-3" style="margin-bottom: 24px;">
+                <!-- Python -->
+                <div class="glass-card">
+                    <div class="card-icon bg-python"><i class="fa-brands fa-python color-python"></i></div>
+                    <div class="card-title">Python 3.10+</div>
+                    <div class="card-desc">Our primary backend language. Handles all server-side logic, data processing, and API routing. Chosen for its readability and rich ecosystem.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Used for:</strong> API logic, data models, file I/O, UUID generation, date handling
+                    </div>
+                </div>
+                <!-- FastAPI -->
+                <div class="glass-card">
+                    <div class="card-icon bg-fastapi"><i class="fa-solid fa-bolt color-fastapi"></i></div>
+                    <div class="card-title">FastAPI</div>
+                    <div class="card-desc">Modern, high-performance Python web framework for building APIs. Supports automatic request validation, async handlers, and auto-generated docs.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Used for:</strong> REST API endpoints, request routing, file serving, error handling
+                    </div>
+                </div>
+                <!-- Uvicorn -->
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(39,174,96,0.05));"><i class="fa-solid fa-rocket color-uvicorn"></i></div>
+                    <div class="card-title">Uvicorn (ASGI Server)</div>
+                    <div class="card-desc">Lightning-fast ASGI web server that runs our FastAPI application. Supports hot-reload during development for instant code changes.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Used for:</strong> Hosting the server on localhost:8000, hot-reload dev mode
+                    </div>
+                </div>
+                <!-- Pydantic -->
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05));"><i class="fa-solid fa-shield-halved color-pydantic"></i></div>
+                    <div class="card-title">Pydantic</div>
+                    <div class="card-desc">Data validation library using Python type annotations. Automatically validates incoming checkout requests, shipping details, and cart items.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Models:</strong> CartItem, ShippingDetails, CheckoutRequest + EmailStr validation
+                    </div>
+                </div>
+                <!-- HTML5 -->
+                <div class="glass-card">
+                    <div class="card-icon bg-html"><i class="fa-brands fa-html5 color-html"></i></div>
+                    <div class="card-title">HTML5</div>
+                    <div class="card-desc">Semantic markup for the entire storefront — navigation, product grid, cart drawer, checkout modal, success screens, and order history.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Structure:</strong> 286 lines of clean, semantic HTML with modals & drawers
+                    </div>
+                </div>
+                <!-- CSS3 -->
+                <div class="glass-card">
+                    <div class="card-icon bg-css"><i class="fa-brands fa-css3-alt color-css"></i></div>
+                    <div class="card-title">Vanilla CSS3</div>
+                    <div class="card-desc">1,278 lines of hand-crafted CSS. Custom design system with glassmorphism, CSS variables, animations, responsive grids, and a rangoli-pattern background.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Techniques:</strong> backdrop-filter, CSS variables, @keyframes, SVG data-URI patterns
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <!-- JavaScript -->
+                <div class="glass-card">
+                    <div class="card-icon bg-js"><i class="fa-brands fa-js color-js"></i></div>
+                    <div class="card-title">Vanilla JavaScript (ES6+)</div>
+                    <div class="card-desc">610 lines of client-side logic. Handles product fetching, real-time search/filter, cart state with localStorage persistence, checkout form submission, and invoice downloads.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Features:</strong> Fetch API, DOM manipulation, localStorage, async/await
+                    </div>
+                </div>
+                <!-- JSON -->
+                <div class="glass-card">
+                    <div class="card-icon bg-json"><i class="fa-solid fa-database color-json"></i></div>
+                    <div class="card-title">JSON File Database</div>
+                    <div class="card-desc">A lightweight, file-based database (orders.json) for persisting order records. No external database engine needed — perfect for academic demonstrations.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>Storage:</strong> orders.json — auto-created on first checkout
+                    </div>
+                </div>
+                <!-- External Assets -->
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(155,89,182,0.05));"><i class="fa-solid fa-puzzle-piece" style="color:#9b59b6"></i></div>
+                    <div class="card-title">External Libraries</div>
+                    <div class="card-desc">Google Fonts (Outfit + Inter) for modern typography. Font Awesome 6.4 for a rich icon system across the UI. Unsplash for product imagery.</div>
+                    <div class="divider"></div>
+                    <div style="font-size:11px; color:var(--text-muted);">
+                        <strong>CDN:</strong> fonts.googleapis.com, cdnjs.cloudflare.com, unsplash
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 3: Architecture ======= -->
+    <div class="slide" data-slide="3">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">System Design</div>
+            <h2 class="section-title">Project <span class="highlight">Architecture</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">A clean three-layer architecture: Presentation → API → Data. Here's how every piece fits together.</p>
+
+            <!-- Architecture Layers -->
+            <div style="display:flex; flex-direction:column; gap:0;">
+                <!-- Presentation Layer -->
+                <div class="arch-layer">
+                    <div class="arch-layer-label" style="color: var(--saffron);">🎨 Presentation Layer (Frontend)</div>
+                    <div class="arch-items">
+                        <div class="arch-item"><i class="fa-brands fa-html5 color-html"></i> index.html</div>
+                        <div class="arch-item"><i class="fa-brands fa-css3-alt color-css"></i> style.css</div>
+                        <div class="arch-item"><i class="fa-brands fa-js color-js"></i> script.js</div>
+                        <div class="arch-item"><i class="fa-solid fa-font color-html"></i> Google Fonts</div>
+                        <div class="arch-item"><i class="fa-solid fa-icons" style="color:#9b59b6"></i> Font Awesome</div>
+                        <div class="arch-item"><i class="fa-solid fa-image color-fastapi"></i> Unsplash CDN</div>
+                    </div>
+                </div>
+
+                <div class="arch-connector"><i class="fa-solid fa-arrow-down"></i> Fetch API (HTTP requests) <i class="fa-solid fa-arrow-up"></i></div>
+
+                <!-- API Layer -->
+                <div class="arch-layer">
+                    <div class="arch-layer-label" style="color: var(--mehndi);">⚡ API Layer (FastAPI Backend)</div>
+                    <div class="arch-items">
+                        <div class="arch-item"><i class="fa-solid fa-route color-fastapi"></i> Route Handlers</div>
+                        <div class="arch-item"><i class="fa-solid fa-shield color-pydantic"></i> Pydantic Validation</div>
+                        <div class="arch-item"><i class="fa-solid fa-tags color-js"></i> Coupon Engine</div>
+                        <div class="arch-item"><i class="fa-solid fa-calculator color-python"></i> Tax & Price Calc</div>
+                        <div class="arch-item"><i class="fa-solid fa-file-invoice color-python"></i> Invoice Generator</div>
+                        <div class="arch-item"><i class="fa-solid fa-cube color-fastapi"></i> Static File Server</div>
+                    </div>
+                </div>
+
+                <div class="arch-connector"><i class="fa-solid fa-arrow-down"></i> JSON read/write <i class="fa-solid fa-arrow-up"></i></div>
+
+                <!-- Data Layer -->
+                <div class="arch-layer">
+                    <div class="arch-layer-label" style="color: var(--gold);">💾 Data Layer (Storage)</div>
+                    <div class="arch-items">
+                        <div class="arch-item"><i class="fa-solid fa-database color-json"></i> orders.json (Order DB)</div>
+                        <div class="arch-item"><i class="fa-solid fa-box color-python"></i> In-Memory Products[]</div>
+                        <div class="arch-item"><i class="fa-solid fa-hard-drive color-js"></i> localStorage (Cart)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- File Structure -->
+            <h3 style="font-family:var(--font-head); font-size:16px; margin-bottom:14px; font-weight:700;">📁 File Structure</h3>
+            <div class="code-block" style="font-size:13px;">
+<span class="str">📂 Samrudhi Store/</span>
+├── <span class="fn">main.py</span>          <span class="cm"># FastAPI backend — 367 lines of Python</span>
+├── <span class="fn">index.html</span>       <span class="cm"># Frontend markup — 286 lines</span>
+├── <span class="fn">style.css</span>        <span class="cm"># Design system — 1,278 lines of CSS</span>
+├── <span class="fn">script.js</span>        <span class="cm"># Client logic — 610 lines of JS</span>
+├── <span class="fn">orders.json</span>      <span class="cm"># Auto-generated order database</span>
+└── <span class="fn">build_instructions.txt</span>  <span class="cm"># How-to guide</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 4: API Endpoints ======= -->
+    <div class="slide" data-slide="4">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">Backend APIs</div>
+            <h2 class="section-title">REST API <span class="highlight">Endpoints</span></h2>
+            <p class="subtitle" style="margin-bottom: 24px;">Our FastAPI backend exposes 6 clean REST endpoints. Each one is validated, documented, and purpose-built.</p>
+
+            <div class="glass-card" style="padding:0; overflow:hidden;">
+                <table class="api-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Purpose</th>
+                            <th>Returns</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="method-badge method-get">GET</span></td>
+                            <td class="endpoint-path">/</td>
+                            <td>Serve the main HTML page</td>
+                            <td>index.html (FileResponse)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge method-get">GET</span></td>
+                            <td class="endpoint-path">/api/products</td>
+                            <td>Fetch all 10 products</td>
+                            <td>JSON array of product objects</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge method-get">GET</span></td>
+                            <td class="endpoint-path">/api/products/search</td>
+                            <td>Search, filter & sort products</td>
+                            <td>Filtered JSON (q, category, price, sort)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge method-post">POST</span></td>
+                            <td class="endpoint-path">/api/checkout</td>
+                            <td>Process order & save to DB</td>
+                            <td>Order confirmation + totals</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge method-get">GET</span></td>
+                            <td class="endpoint-path">/api/orders</td>
+                            <td>Retrieve all past orders</td>
+                            <td>Complete order history array</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge method-get">GET</span></td>
+                            <td class="endpoint-path">/api/invoice/{order_id}</td>
+                            <td>Generate & download invoice</td>
+                            <td>Text file stream (downloadable)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3 style="font-family:var(--font-head); font-size:16px; margin-bottom:14px; font-weight:700;">💡 Checkout API — Request Body</h3>
+            <div class="code-block">
+<span class="cm">// POST /api/checkout — Pydantic-validated request</span>
+{
+  <span class="str">"items"</span>: [
+    { <span class="str">"productId"</span>: <span class="num">1</span>, <span class="str">"quantity"</span>: <span class="num">2</span> },
+    { <span class="str">"productId"</span>: <span class="num">3</span>, <span class="str">"quantity"</span>: <span class="num">1</span> }
+  ],
+  <span class="str">"shipping"</span>: {
+    <span class="str">"fullName"</span>: <span class="str">"Abhishek Kumar"</span>,
+    <span class="str">"email"</span>: <span class="str">"abhishek@college.edu"</span>,   <span class="cm">← EmailStr validated</span>
+    <span class="str">"address"</span>: <span class="str">"123 Academic Block"</span>,
+    <span class="str">"city"</span>: <span class="str">"New Delhi"</span>,
+    <span class="str">"zipCode"</span>: <span class="str">"110001"</span>
+  },
+  <span class="str">"couponCode"</span>: <span class="str">"COLLEGE20"</span>   <span class="cm">← Optional coupon</span>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 5: Workflow / User Journey ======= -->
+    <div class="slide" data-slide="5">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">User Journey</div>
+            <h2 class="section-title">How The App <span class="highlight">Works</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">Follow the complete user journey — from landing on the homepage to downloading a paid invoice. Every step is real.</p>
+
+            <div class="flow-row" style="margin-bottom: 36px;">
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--saffron)">🌐</span>
+                    <span class="flow-node-label">Visit Site</span>
+                </div>
+                <span class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--gold)">🔍</span>
+                    <span class="flow-node-label">Browse & Filter</span>
+                </div>
+                <span class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--mehndi)">🛒</span>
+                    <span class="flow-node-label">Add to Cart</span>
+                </div>
+                <span class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--peacock)">🎟️</span>
+                    <span class="flow-node-label">Apply Coupon</span>
+                </div>
+                <span class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--kumkum)">💳</span>
+                    <span class="flow-node-label">Checkout</span>
+                </div>
+                <span class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                <div class="flow-node">
+                    <span class="flow-node-icon" style="color:var(--sky)">📄</span>
+                    <span class="flow-node-label">Get Invoice</span>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">1. User opens localhost:8000</div>
+                        <div class="timeline-desc">FastAPI serves <code>index.html</code> via the <code>GET /</code> route. CSS and JS are loaded as static files. The product catalog is fetched from <code>/api/products/search</code>.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">2. Browsing & Filtering Products</div>
+                        <div class="timeline-desc">Users can search by name, filter by category tabs, adjust the price range slider, and sort products — all instantly via JS Fetch API calls to the backend.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">3. Cart Management</div>
+                        <div class="timeline-desc">Products are added to a sliding cart drawer. Quantities can be adjusted. Cart state is persisted to <strong>localStorage</strong> so it survives page refreshes.</div>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--mehndi)!important; box-shadow:0 0 10px rgba(39,174,96,0.5)!important;"></div>
+                        <div class="timeline-title">4. Coupon Codes & Pricing</div>
+                        <div class="timeline-desc">Three working coupons: <strong>COLLEGE20</strong> (20% off), <strong>SAMRUDHI15</strong> (15% off), <strong>FREESHIP</strong> (free shipping). Tax is auto-calculated at 8%. Shipping is free above $150.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--peacock)!important; box-shadow:0 0 10px rgba(22,160,133,0.5)!important;"></div>
+                        <div class="timeline-title">5. Secure Checkout & Payment</div>
+                        <div class="timeline-desc">A modal collects shipping + card details. On submit, JS sends a <code>POST /api/checkout</code> request. FastAPI validates with Pydantic, calculates totals, generates an order ID, and saves to <code>orders.json</code>.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--sky)!important; box-shadow:0 0 10px rgba(52,152,219,0.5)!important;"></div>
+                        <div class="timeline-title">6. Invoice & Order History</div>
+                        <div class="timeline-desc">Success screen offers invoice download — calling <code>GET /api/invoice/{id}</code> which generates a formatted text receipt. Order history modal reads all past transactions from the database.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 6: Features Deep Dive ======= -->
+    <div class="slide" data-slide="6">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">Key Features</div>
+            <h2 class="section-title">What Makes It <span class="highlight">Special</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">This isn't a basic CRUD app. Here are the features that make it feel like a real product.</p>
+
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(230,126,34,0.2), rgba(241,196,15,0.1));">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold)"></i>
+                    </div>
+                    <div class="card-title">Glassmorphic UI Design</div>
+                    <div class="card-desc">Frosted glass panels, ambient glow orbs, smooth hover animations, rangoli SVG background patterns, and a curated Indian color palette — all in pure CSS. No frameworks, no Tailwind.</div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(52,152,219,0.05));">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--sky)"></i>
+                    </div>
+                    <div class="card-title">Real-Time Search & Filters</div>
+                    <div class="card-desc">Instant search-as-you-type queries, category tabs (Phones, Laptops, Audio, Wearables, Accessories), price range slider, and multi-column sorting — all powered by backend API queries.</div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(39,174,96,0.05));">
+                        <i class="fa-solid fa-cart-shopping" style="color:var(--mehndi)"></i>
+                    </div>
+                    <div class="card-title">Persistent Shopping Cart</div>
+                    <div class="card-desc">Cart slides in as a sleek drawer. Add, remove, adjust quantities. State is saved to localStorage — refresh the page, your cart stays intact. Subtotal & shipping auto-update.</div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(192,57,43,0.05));">
+                        <i class="fa-solid fa-ticket" style="color:var(--kumkum)"></i>
+                    </div>
+                    <div class="card-title">Academic Coupon System</div>
+                    <div class="card-desc">Three real coupon codes that work both client-side (for preview) and server-side (for actual calculations). Backend is the source of truth — no client-side cheating!</div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(155,89,182,0.05));">
+                        <i class="fa-solid fa-file-invoice" style="color:#9b59b6"></i>
+                    </div>
+                    <div class="card-title">Dynamic Invoice Generation</div>
+                    <div class="card-desc">Backend generates formatted text invoices on-the-fly using StreamingResponse. Each invoice includes order ID, customer info, itemized list, discounts, tax, and grand total.</div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, rgba(22,160,133,0.2), rgba(22,160,133,0.05));">
+                        <i class="fa-solid fa-clock-rotate-left" style="color:var(--peacock)"></i>
+                    </div>
+                    <div class="card-title">Order History Archive</div>
+                    <div class="card-desc">Every order is logged to orders.json. Users can view a complete transaction history modal and re-download any past invoice — simulating a real order management system.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 7: Development Roadmap ======= -->
+    <div class="slide" data-slide="7">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">Development Roadmap</div>
+            <h2 class="section-title">How We <span class="highlight">Built It</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">The honest, step-by-step journey from an empty folder to a working e-commerce platform. Here's our actual build process.</p>
+
+            <div class="grid-2">
+                <div class="timeline" style="padding-left: 40px;">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">Phase 1 — Planning & Research</div>
+                        <div class="timeline-desc">
+                            Decided on the tech stack. Chose FastAPI over Flask for automatic validation. Sketched out the product catalog schema and API endpoints on paper. Studied glassmorphism & Indian color aesthetics.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">Phase 2 — Backend First</div>
+                        <div class="timeline-desc">
+                            Built <code>main.py</code> — defined product data, created Pydantic models (CartItem, ShippingDetails, CheckoutRequest), implemented all API routes, file-based order storage, and the invoice generator.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">Phase 3 — HTML Structure</div>
+                        <div class="timeline-desc">
+                            Designed the full page layout in <code>index.html</code> — navigation bar with category tabs, search toolbar, product grid container, cart drawer, checkout modal, success modal, and order history modal.
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline" style="padding-left: 40px;">
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--mehndi)!important; box-shadow:0 0 10px rgba(39,174,96,0.5)!important;"></div>
+                        <div class="timeline-title">Phase 4 — CSS Design System</div>
+                        <div class="timeline-desc">
+                            Created 1,278 lines of CSS — custom variables for the Indian color palette, glassmorphic panels, responsive grid layouts, smooth animations, custom scrollbars, and the rangoli SVG background.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--peacock)!important; box-shadow:0 0 10px rgba(22,160,133,0.5)!important;"></div>
+                        <div class="timeline-title">Phase 5 — JavaScript Interactivity</div>
+                        <div class="timeline-desc">
+                            Wrote 610 lines of JS — Fetch API integration, real-time search/filter, cart state management with localStorage, coupon validation, checkout form handling, and invoice download triggering.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background:var(--sky)!important; box-shadow:0 0 10px rgba(52,152,219,0.5)!important;"></div>
+                        <div class="timeline-title">Phase 6 — Testing & Polish</div>
+                        <div class="timeline-desc">
+                            Tested end-to-end flow: product browsing → cart → checkout → invoice. Verified coupon logic, edge cases (empty cart, invalid codes). Added micro-animations, loading states, and error messages.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3 style="font-family:var(--font-head); font-size:16px; margin-bottom:14px; font-weight:700;">🚀 How to Run This Project</h3>
+            <div class="code-block">
+<span class="cm"># Step 1: Install dependencies</span>
+<span class="fn">pip install</span> fastapi uvicorn pydantic email-validator
+
+<span class="cm"># Step 2: Run the server</span>
+<span class="fn">python</span> main.py
+
+<span class="cm"># Step 3: Open your browser</span>
+<span class="str">http://127.0.0.1:8000</span>
+
+<span class="cm"># That's it! The whole e-commerce store is live. 🎉</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 8: Code Highlights ======= -->
+    <div class="slide" data-slide="8">
+        <div class="slide-inner scrollable-content">
+            <div class="slide-tag">Code Highlights</div>
+            <h2 class="section-title">Under The <span class="highlight">Hood</span></h2>
+            <p class="subtitle" style="margin-bottom: 28px;">A peek at some of the cleanest and most interesting code snippets from this project.</p>
+
+            <div class="grid-2">
+                <div>
+                    <h3 style="font-family:var(--font-head); font-size:15px; margin-bottom:10px; font-weight:700;"><i class="fa-brands fa-python color-python"></i> Pydantic Data Models</h3>
+                    <div class="code-block">
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, EmailStr
+
+<span class="kw">class</span> <span class="fn">CartItem</span>(BaseModel):
+    productId: <span class="num">int</span>
+    quantity: <span class="num">int</span>
+
+<span class="kw">class</span> <span class="fn">ShippingDetails</span>(BaseModel):
+    fullName: <span class="num">str</span>
+    email: <span class="dec">EmailStr</span>  <span class="cm"># auto-validated!</span>
+    address: <span class="num">str</span>
+    city: <span class="num">str</span>
+    zipCode: <span class="num">str</span>
+
+<span class="kw">class</span> <span class="fn">CheckoutRequest</span>(BaseModel):
+    items: List[<span class="fn">CartItem</span>]
+    shipping: <span class="fn">ShippingDetails</span>
+    couponCode: Optional[<span class="num">str</span>]
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-family:var(--font-head); font-size:15px; margin-bottom:10px; font-weight:700;"><i class="fa-solid fa-bolt color-fastapi"></i> Search API with Filters</h3>
+                    <div class="code-block">
+<span class="dec">@app.get</span>(<span class="str">"/api/products/search"</span>)
+<span class="kw">def</span> <span class="fn">search_products</span>(
+    q: Optional[<span class="num">str</span>],
+    category: Optional[<span class="num">str</span>] = <span class="str">"All"</span>,
+    min_price: <span class="num">float</span> = <span class="num">0.0</span>,
+    max_price: <span class="num">float</span> = <span class="num">9999.0</span>,
+    sort: Optional[<span class="num">str</span>] = <span class="kw">None</span>
+):
+    results = PRODUCTS.copy()
+
+    <span class="cm"># Text search</span>
+    <span class="kw">if</span> q:
+        results = [p <span class="kw">for</span> p <span class="kw">in</span> results
+            <span class="kw">if</span> q <span class="kw">in</span> p[<span class="str">"name"</span>].lower()]
+
+    <span class="cm"># Category filter</span>
+    <span class="kw">if</span> category != <span class="str">"All"</span>:
+        results = [p <span class="kw">for</span> p <span class="kw">in</span> results
+            <span class="kw">if</span> p[<span class="str">"category"</span>] == category]
+
+    <span class="kw">return</span> results
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <h3 style="font-family:var(--font-head); font-size:15px; margin-bottom:10px; font-weight:700;"><i class="fa-brands fa-js color-js"></i> Cart Persistence with localStorage</h3>
+                <div class="code-block">
+<span class="cm">// Save cart to browser storage — survives page refreshes</span>
+<span class="kw">function</span> <span class="fn">saveCart</span>() {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'auramart_cart'</span>, JSON.<span class="fn">stringify</span>(cart));
+}
+
+<span class="cm">// Load cart on page startup</span>
+<span class="kw">const</span> storedCart = localStorage.<span class="fn">getItem</span>(<span class="str">'auramart_cart'</span>);
+<span class="kw">if</span> (storedCart) {
+    cart = JSON.<span class="fn">parse</span>(storedCart);   <span class="cm">// Restore previous session</span>
+    <span class="fn">updateCartUI</span>();                  <span class="cm">// Re-render the drawer</span>
+}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= SLIDE 9: Thank You ======= -->
+    <div class="slide" data-slide="9">
+        <div class="slide-inner title-center">
+            <div class="hero-icon-wrap fade-up" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(22,160,133,0.2)); border-color: rgba(39,174,96,0.3);">
+                <i class="fa-solid fa-heart" style="color: var(--mehndi);"></i>
+            </div>
+            <div class="slide-tag fade-up stagger-1">Thank You</div>
+            <h1 class="hero-title fade-up stagger-2">
+                Built with <span class="highlight">Passion</span>
+            </h1>
+            <p class="subtitle fade-up stagger-3" style="text-align:center; margin-bottom: 36px;">
+                This project was crafted as an academic assignment, but built with the care of a real product. Every line of code, every animation, every color choice was intentional. We hope you enjoyed the walkthrough.
+            </p>
+
+            <div class="grid-3 fade-up stagger-4" style="max-width: 700px; margin-bottom:36px;">
+                <div class="glass-card" style="text-align:center; padding:20px;">
+                    <div style="font-size:28px; margin-bottom:8px;">🐍</div>
+                    <div class="card-title">Backend</div>
+                    <div class="card-desc">Python + FastAPI</div>
+                </div>
+                <div class="glass-card" style="text-align:center; padding:20px;">
+                    <div style="font-size:28px; margin-bottom:8px;">🎨</div>
+                    <div class="card-title">Frontend</div>
+                    <div class="card-desc">HTML + CSS + JS</div>
+                </div>
+                <div class="glass-card" style="text-align:center; padding:20px;">
+                    <div style="font-size:28px; margin-bottom:8px;">💾</div>
+                    <div class="card-title">Database</div>
+                    <div class="card-desc">JSON File Storage</div>
+                </div>
+            </div>
+
+            <div class="fade-up stagger-5" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+                <span class="tech-chip"><i class="fa-solid fa-code"></i> 2,541 Total Lines</span>
+                <span class="tech-chip"><i class="fa-solid fa-puzzle-piece"></i> 5 Source Files</span>
+                <span class="tech-chip"><i class="fa-solid fa-rocket"></i> 6 API Endpoints</span>
+                <span class="tech-chip"><i class="fa-solid fa-graduation-cap"></i> College Assignment</span>
+            </div>
+
+            <div class="fade-up stagger-6" style="margin-top: 40px; color: var(--text-muted); font-size:13px;">
+                <p style="font-family: var(--font-head); font-weight: 600;">Samrudhi Store E-Commerce Platform</p>
+                <p style="font-size:11px; margin-top:4px;">© 2026 — Designed for Python/FastAPI Backend Academic Assignment Evaluation</p>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /presentation -->
+
+<!-- ==================== NAVIGATION BAR ==================== -->
+<nav class="nav-bar">
+    <div class="nav-progress" id="nav-progress">
+        <!-- Dots generated by JS -->
+    </div>
+    <div class="nav-info" id="nav-info">01 / 10</div>
+    <div class="nav-controls">
+        <button class="nav-btn" id="prev-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="nav-btn" id="next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</nav>
+
+<script>
+// ==================== PRESENTATION ENGINE ====================
+const SLIDE_NAMES = [
+    "Title",
+    "The Idea",
+    "Tech Stack",
+    "Architecture",
+    "API Endpoints",
+    "User Journey",
+    "Key Features",
+    "Roadmap",
+    "Code Highlights",
+    "Thank You"
+];
+
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+let isTransitioning = false;
+
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navInfo = document.getElementById('nav-info');
+const navProgress = document.getElementById('nav-progress');
+
+// Build nav dots
+SLIDE_NAMES.forEach((name, i) => {
+    const dot = document.createElement('button');
+    dot.className = `nav-dot${i === 0 ? ' active' : ''}`;
+    dot.innerHTML = `<span class="tooltip">${name}</span>`;
+    dot.addEventListener('click', () => goToSlide(i));
+    navProgress.appendChild(dot);
+});
+
+function updateNavigation() {
+    navInfo.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+    prevBtn.disabled = currentSlide === 0;
+    nextBtn.disabled = currentSlide === totalSlides - 1;
+
+    document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
+}
+
+function goToSlide(targetIndex) {
+    if (targetIndex === currentSlide || isTransitioning) return;
+    isTransitioning = true;
+
+    const direction = targetIndex > currentSlide ? 'left' : 'right';
+    const currentEl = slides[currentSlide];
+    const targetEl = slides[targetIndex];
+
+    // Exit current
+    currentEl.classList.remove('active');
+    currentEl.classList.add(direction === 'left' ? 'exit-left' : '');
+
+    // Prepare target
+    if (direction === 'right') {
+        targetEl.style.transform = 'translateX(-80px) scale(0.96)';
+    }
+
+    // Enter target
+    requestAnimationFrame(() => {
+        targetEl.classList.add('active');
+        targetEl.style.transform = '';
+    });
+
+    currentSlide = targetIndex;
+    updateNavigation();
+
+    setTimeout(() => {
+        currentEl.classList.remove('exit-left');
+        isTransitioning = false;
+    }, 700);
+}
+
+prevBtn.addEventListener('click', () => {
+    if (currentSlide > 0) goToSlide(currentSlide - 1);
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+});
+
+// Touch / swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 60) {
+        if (diff > 0 && currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+        else if (diff < 0 && currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+});
+
+updateNavigation();
+</script>
+
+</body>
+</html>
